@@ -10,6 +10,18 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    public boolean checkLoginId(String loginId){
+        return userRepository.existsByLoginId(loginId);
+    }
+
+    public boolean checkNickname(String nickname){
+        return userRepository.existsByNickname(nickname);
+    }
+
+
+
+
+
 
 
 

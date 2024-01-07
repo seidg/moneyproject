@@ -25,6 +25,8 @@ public class JoinRequest {
     private String nickname;
 
 
+
+
     public UserEntity toEntity(){
         return UserEntity.builder()
                 .loginId(this.loginId)
