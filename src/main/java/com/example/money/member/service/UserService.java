@@ -1,27 +1,60 @@
 package com.example.money.member.service;
 
+import com.example.money.member.dto.JoinRequest;
+import com.example.money.member.dto.LoginRequest;
+import com.example.money.member.entity.UserEntity;
 import com.example.money.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor //ÀÇÁ¸¼º ÁÖÀÔ¿¡ »ç¿ëµÈ´Ù . »ı¼ºÀÚ ÁÖÀÔ¿¡ ´ëÇÑ ÄÚµå¸¦ »ı¼º
+@RequiredArgsConstructor //ì˜ì¡´ì„± ì£¼ì…ì— ì‚¬ìš©ëœë‹¤ . ìƒì„±ì ì£¼ì…ì— ëŒ€í•œ ì½”ë“œë¥¼ ìƒì„±
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
 
-    public boolean checkLoginId(String loginId){
+    public boolean checkLoginId(String loginId) {
         return userRepository.existsByLoginId(loginId);
     }
 
-    public boolean checkNickname(String nickname){
+    public boolean checkNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
 
+    public void join(JoinRequest joinreq) {
+        userRepository.save((joinreq.toEntity(encoder.encode(joinreq.getPassword()))));
+    }
 
+    public UserEntity login(LoginRequest loginreq) {
+        if (!userRepository.existsByLoginId(loginreq.getLoginId())) {
+            return null;
+        }
+        Optional<UserEntity> userEntity = userRepository.findByLoginId(loginreq.getLoginId());
+        if (!userEntity.get().getPassword().equals(loginreq.getPassword())) {
+            return null;
+        }
+        return userEntity.get();
 
+    }
 
-
+    public UserEntity getLoginUserEntityById(Long userId) {
+        Optional<UserEntity> optinalUserEntity = userRepository.findById(userId);
+        if(optinalUserEntity.isEmpty()) {
+            return null;
+        }
+        return optinalUserEntity.get();
+    }
+    public UserEntity getLoginUserEntityByLoginId(String loginId) {
+        Optional<UserEntity> optinalUserEntity = userRepository.findByLoginId(loginId);
+        if(optinalUserEntity.isEmpty()) {
+            return null;
+        }
+        return optinalUserEntity.get();
+    }
 
 
 
